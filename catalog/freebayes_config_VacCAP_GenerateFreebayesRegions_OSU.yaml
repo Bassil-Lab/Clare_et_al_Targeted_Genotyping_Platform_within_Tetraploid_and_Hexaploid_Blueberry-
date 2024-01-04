@@ -1,0 +1,13 @@
+# these parameters should usually be stored in the snakemake configuration file (config.yaml) and accessed e.g. config['ref']
+
+reference: "/nfs3/HORT/Bassil_Lab/mandie/reference_genomes/Blueberry_genomes/P0_reference/Vce1.0.singleline.p0.fasta"
+
+chroms: ['Vcev1_p0.Chr06','Vcev1_p0.Chr03','Vcev1_p0.Chr11','Vcev1_p0.Chr07','Vcev1_p0.Chr12']
+
+chunks: 300
+
+rest: ['Vcev1_p0.C198','Vcev1_p0.C199','Vcev1_p0.C200','Vcev1_p0.C201','Vcev1_p0.C202','Vcev1_p0.C203','Vcev1_p0.C204','Vcev1_p0.C205','Vcev1_p0.C206','Vcev1_p0.C207','Vcev1_p0.C208','Vcev1_p0.C209','Vcev1_p0.C210','Vcev1_p0.C211','Vcev1_p0.C212','Vcev1_p0.C213','Vcev1_p0.C214','Vcev1_p0.C215','Vcev1_p0.C216','Vcev1_p0.C217','Vcev1_p0.C218','Vcev1_p0.C219','Vcev1_p0.C220','Vcev1_p0.C221','Vcev1_p0.C222','Vcev1_p0.C223','Vcev1_p0.C224','Vcev1_p0.C225','Vcev1_p0.C226','Vcev1_p0.C227','Vcev1_p0.C228','Vcev1_p0.C229','Vcev1_p0.C230','Vcev1_p0.C231','Vcev1_p0.C232','Vcev1_p0.C233','Vcev1_p0.C234','Vcev1_p0.C235','Vcev1_p0.C236','Vcev1_p0.C237','Vcev1_p0.C238','Vcev1_p0.C239','Vcev1_p0.C240','Vcev1_p0.C241','Vcev1_p0.C242','Vcev1_p0.C243','Vcev1_p0.C244','Vcev1_p0.C245','Vcev1_p0.C246','Vcev1_p0.C247','Vcev1_p0.C248','Vcev1_p0.C249']
+
+nosplit: 1
+
+
