@@ -1,0 +1,355 @@
+
+					### FLEXSEQ BLUEBERRY ANALYSIS ###
+
+### Subsampling for NHS, SHB, RE and Wild subsets
+# Calculate site and sample depth after splitting subsets
+project=VAC_155002_Flex-Seq-20221005
+file=NHB
+bcftools view -S NHB_Samples.txt ${project}.vcf > ${file}.raw.vcf
+vcftools --vcf ${file}.raw.vcf --depth --out ${file}.raw.sample
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30" -k -g "DP > 10" ${file}.raw.vcf > ${file}.filter.vcf
+bcftools view -i 'F_MISSING<0.1' ${file}.filter.vcf > ${file}.final.vcf ##if more than 10% of samples have missing data remove variant
+vcftools --vcf ${file}.final.vcf --depth --out ${file}.final.sample
+bedtools intersect -a Probes.txt -b ${file}.final.vcf -c > ${file}.final.recovery.bed
+awk '$5 != 0' ${file}.final.recovery.bed > ${file}_RecoveredLoci.bed
+bedtools closest -a ${file}_RecoveredLoci.bed -b ${file}_RecoveredLoci.bed -io -iu -D ref > ${file}_RecoveredDistance.bed
+vcffilter -s -f "AC > 1" ${file}.final.vcf > ${file}.poly.vcf
+vcftools --vcf ${file}.poly.vcf --depth --out ${file}.poly.sample
+bedtools intersect -a Probes.txt -b ${file}.poly.vcf -c > ${file}.poly.recovery.bed
+awk -i inplace '$5 != 0'  ${file}.poly.recovery.bed
+bedtools closest -a ${file}.poly.recovery.bed -b ${file}.poly.recovery.bed -io -iu -D ref > ${file}.poly.distance.bed
+
+file=SHB
+bcftools view -S SHB_Samples.txt ${project}.vcf > ${file}.raw.vcf
+vcftools --vcf ${file}.raw.vcf --depth --out ${file}.raw.sample
+file=SHB
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30" -k -g "DP > 10" ${file}.raw.vcf > ${file}.filter.vcf
+bcftools view -i 'F_MISSING<0.1' ${file}.filter.vcf > ${file}.final.vcf 
+vcftools --vcf ${file}.final.vcf --depth --out ${file}.final.sample
+bedtools intersect -a Probes.txt -b ${file}.final.vcf -c > ${file}.final.recovery.bed
+awk '$5 != 0' ${file}.final.recovery.bed > ${file}_RecoveredLoci.bed
+bedtools closest -a ${file}_RecoveredLoci.bed -b ${file}_RecoveredLoci.bed -io -iu -D ref > ${file}_RecoveredDistance.bed
+vcffilter -s -f "AC > 1" ${file}.final.vcf > ${file}.poly.vcf
+vcftools --vcf ${file}.poly.vcf --depth --out ${file}.poly.sample
+bedtools intersect -a Probes.txt -b ${file}.poly.vcf -c > ${file}.poly.recovery.bed
+awk -i inplace '$5 != 0'  ${file}.poly.recovery.bed
+bedtools closest -a ${file}.poly.recovery.bed -b ${file}.poly.recovery.bed -io -iu -D ref > ${file}.poly.distance.bed
+
+file=RE
+bcftools view -S RE_Samples.txt ${project}.vcf > ${file}.raw.vcf
+vcftools --vcf ${file}.raw.vcf --depth --out ${file}.raw.sample
+file=RE
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30" -k -g "DP > 10" ${file}.raw.vcf > ${file}.filter.vcf
+bcftools view -i 'F_MISSING<0.1' ${file}.filter.vcf > ${file}.final.vcf 
+vcftools --vcf ${file}.final.vcf --depth --out ${file}.final.sample
+bedtools intersect -a Probes.txt -b ${file}.final.vcf -c > ${file}.final.recovery.bed
+awk '$5 != 0' ${file}.final.recovery.bed > ${file}_RecoveredLoci.bed
+bedtools closest -a ${file}_RecoveredLoci.bed -b ${file}_RecoveredLoci.bed -io -iu -D ref > ${file}_RecoveredDistance.bed
+vcffilter -s -f "AC > 1" ${file}.final.vcf > ${file}.poly.vcf
+vcftools --vcf ${file}.poly.vcf --depth --out ${file}.poly.sample
+bedtools intersect -a Probes.txt -b ${file}.poly.vcf -c > ${file}.poly.recovery.bed
+awk -i inplace '$5 != 0'  ${file}.poly.recovery.bed
+bedtools closest -a ${file}.poly.recovery.bed -b ${file}.poly.recovery.bed -io -iu -D ref > ${file}.poly.distance.bed
+
+### Cyano and noncyano samples, poor samples removed (both arboreum, )
+file=Cyano
+bcftools view -S ${file}_Samples.txt ${project}.vcf > ${file}.raw.vcf
+vcftools --vcf ${file}.raw.vcf --depth --out ${file}.raw.sample
+file=Cyano
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30" -k -g "DP > 10" ${file}.raw.vcf > ${file}.filter.vcf
+bcftools view -i 'F_MISSING<0.1' ${file}.filter.vcf > ${file}.final.vcf 
+vcftools --vcf ${file}.final.vcf --depth --out ${file}.final.sample
+bedtools intersect -a Probes.txt -b ${file}.final.vcf -c > ${file}.final.recovery.bed
+awk '$5 != 0' ${file}.final.recovery.bed > ${file}_RecoveredLoci.bed
+bedtools closest -a ${file}_RecoveredLoci.bed -b ${file}_RecoveredLoci.bed -io -iu -D ref > ${file}_RecoveredDistance.bed
+vcffilter -s -f "AC > 1" ${file}.final.vcf > ${file}.poly.vcf
+vcftools --vcf ${file}.poly.vcf --depth --out ${file}.poly.sample
+bedtools intersect -a Probes.txt -b ${file}.poly.vcf -c > ${file}.poly.recovery.bed
+awk -i inplace '$5 != 0'  ${file}.poly.recovery.bed
+bedtools closest -a ${file}.poly.recovery.bed -b ${file}.poly.recovery.bed -io -iu -D ref > ${file}.poly.distance.bed
+
+### Non-Cyano
+file=Noncyano
+bcftools view -S ${file}_Samples.txt ${project}.vcf > ${file}.raw.vcf
+vcftools --vcf ${file}.raw.vcf --depth --out ${file}.raw.sample
+file=Noncyano
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30" -k -g "DP > 10" ${file}.raw.vcf > ${file}.filter.vcf
+bcftools view -i 'F_MISSING<0.1' ${file}.filter.vcf > ${file}.final.vcf 
+vcftools --vcf ${file}.final.vcf --depth --out ${file}.final.sample
+bedtools intersect -a Probes.txt -b ${file}.final.vcf -c > ${file}.final.recovery.bed
+awk '$5 != 0' ${file}.final.recovery.bed > ${file}_RecoveredLoci.bed
+bedtools closest -a ${file}_RecoveredLoci.bed -b ${file}_RecoveredLoci.bed -io -iu -D ref > ${file}_RecoveredDistance.bed
+vcffilter -s -f "AC > 1" ${file}.final.vcf > ${file}.poly.vcf
+vcftools --vcf ${file}.poly.vcf --depth --out ${file}.poly.sample
+bedtools intersect -a Probes.txt -b ${file}.poly.vcf -c > ${file}.poly.recovery.bed
+awk -i inplace '$5 != 0'  ${file}.poly.recovery.bed
+bedtools closest -a ${file}.poly.recovery.bed -b ${file}.poly.recovery.bed -io -iu -D ref > ${file}.poly.distance.bed
+
+bedtools intersect -a Probes.txt -b Noncyano.raw.vcf -c > Noncyano.raw.recovery.bed
+
+### individual recovery
+project=VAC_155002_Flex-Seq-20221005
+sample=VAC_155002_P002_WH11
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WA01
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WG11
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P002_WG11
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WB12
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WC12
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WH04
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P002_WG09
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WG10
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WD12
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WE12
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P002_WB10
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P002_WA10
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WH10
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WB11
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P002_WH12
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WA11
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P002_WE08
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WE11
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P002_WF08
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P001_WC11
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P002_WH09
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+sample=VAC_155002_P002_WC10
+bcftools view -s ${sample} ${project}.vcf > ${sample}.raw.vcf
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & MQMR > 30 & MQM > 30 & DP > 10" ${sample}.raw.vcf > ${sample}.vcf
+bcftools view -i 'F_MISSING<0.1' ${sample}.vcf > ${sample}.remove.vcf 
+bedtools intersect -a Probes.txt -b ${sample}.remove.vcf -c > ${sample}.recovery.bed
+
+### SNP set for phylogenetic tree
+file=VAC_155002_Flex-Seq-20221005
+project=phylo
+vcffilter -s -f "QUAL > 30 & TYPE = snp & NUMALT = 1 & AC > 10 \
+& DP > 9600 & MQMR > 30 & MQM > 30 & AB > 0.25 & AB < 0.75" ${file}.vcf > ${project}.vcf
+bcftools view -i 'F_MISSING=0' ${project}.vcf > ${project}.final.vcf
+
+					###			Haplotype Construction			###
+
+sudo umount /mnt/e
+sudo rmdir /mnt/e
+sudo mkdir /mnt/e
+sudo mount -t drvfs E: /mnt/e
+
+### Read Mapping to Reference
+# Index Reference
+ref=W85_Phase0
+bwa-mem2 index ${ref}.fasta
+
+for f in *.fastq.gz
+do                  
+fastqc -t 12 -k 10 -q $f
+done
+
+for f in *R1_001.fastq.gz
+do
+fastp -w 12 --dont_overwrite \
+-j ${f%.fastq.gz}.fastp.json \
+-h ${f%.fastq.gz}.fastp.html \
+-i $f \
+-I ${f%R1_001.fastq.gz}R2_001.fastq.gz \
+-o ${f%.fastq.gz}.trim.fastq.gz \
+-O ${f%R1_001.fastq.gz}R2_001.trim.fastq.gz \
+-f 10 -t 10 -y -r -c -l 20 -V
+done
+
+rename -n -v 's/RAPiD-Genomics_F259_//' *.fastq.gz #dryrun
+rename -n -v 's/_i5-3._i7-.._S..._L002_R._001//' *.fastq.gz #dryrun
+
+rename -v 's/RAPiD-Genomics_F259_//' *.fastq.gz
+rename -v 's/_i5-.._i7-.._S..._L002//' *.fastq.gz
+rename -v 's/_i5-.._i7-._S..._L002//' *.fastq.gz
+rename -v 's/_001//' *.fastq.gz
+rename -v 's/R1_001_//' *.fastq.gz
+rename -v 's/__/_/' *.fastq.gz
+
+# Create bam and bam indices for Illumina
+mkdir trim
+mkdir bam
+
+for sample in *_R1.trim.fastq.gz
+do
+echo $sample
+describer=$(echo ${sample} | sed 's/_R1.trim.fastq.gz//')
+echo $describer
+#Add readgroups and align
+bwa-mem2 mem -t 10 -v 3 -R "@RG\tID:$describer\tSM:$describer\tPL:ILLUMINA" ${ref}.fasta \
+$describer\_R1.trim.fastq.gz $describer\_R2.trim.fastq.gz | \
+samtools view -Shu - | \
+samtools sort -o ${describer}.sorted.bam
+samtools index ${describer}.sorted.bam
+mv $sample trim
+done
+
+grep -vc '#' ${project}.vcf
+
+					### Whatshap haploytype phasing, ## error for undiverse regions
+samtools faidx W8520_P0.fasta
+ls -d -1 $PWD/*.bam > NHB.bam.list
+whatshap polyphase NHB.poly.vcf VAC_155002_P001_WG03.sorted.bam -t 12 -p 4 -r W8520_P0.fasta -o NHB.hap.vcf --sample VAC_155002_P001_WG03
+whatshap polyphase NHB.poly.vcf NHB.bam.list -t 12 -p 4 -r W8520_P0.fasta -o NHB.hap.vcf.gz 
+
+conda create -n whtest python=3.10
+conda activate whtest
+git clone https://github.com/whatshap/whatshap.git
+cd whatshap
+git checkout issue-441
+pip install -e .
+
+					### MCHap haplotype reconstruction
+
+git clone  https://github.com/PlantandFoodResearch/MCHap.git
+cd mchap
+pip install -r requirements.txt
+python setup.py sdist
+pip install dist/mchap-*.tar.gz
+
+###Set up external drive
+sudo mkdir /mnt/f
+sudo mount -t drvfs F: /mnt/f
+sudo mount -t drvfs G: /mnt/g
+sudo mount -t drvfs E: /mnt/e
+
+### unmount when required, i.e. unplugging
+sudo umount /mnt/f
+sudo rmdir /mnt/f
+
+### Reference file
+samtools faidx W85_Phase0.fasta
+
+### Variant file
+project=VAC_155002_Flex-Seq-20221005
+file=NHB
+bgzip -c ${file}.vcf > ${file}.vcf.gz
+tabix -p vcf ${file}.vcf.gz
+
+### Bam list
+ls -d -1 $PWD/*.bam > ${file}.bam.list
+
+mchap assemble \
+        --bam ${file}.bam.list \
+        --targets FlexSeq.bed \
+        --variants ${file}.poly.vcf.gz \
+        --reference W85_Phase0.fasta \
+        --ploidy 4 \
+        --inbreeding 0.01 \
+	--cores 12 > ${file}.hap.vcf
+
+file=Phylo
+bgzip -c ${file}.vcf > ${file}.vcf.gz
+tabix -p vcf ${file}.vcf.gz
+
+mchap assemble \
+        --bam ${file}.bam.list \
+        --targets FlexSeq.bed \
+        --variants ${file}.vcf.gz \
+        --reference W85_Phase0.fasta \
+        --ploidy ${file}.ploidy.txt \
+        --inbreeding 0.01 \
+	--cores 12 > ${file}.hap.vcf
+
+mchap assemble \
+        --bam ${file}.bam.list \
+        --targets FlexSeq.bed \
+        --variants ${file}.vcf.gz \
+        --reference W85_Phase0.fasta \
+        --ploidy 4 \
+        --inbreeding 0.01 \
+	--cores 12 > ${file}.hap.vcf
+
+mchap assemble \
+        --bam Phylo.bam.list \
+        --targets FlexSeq.bed \
+        --variants ${file}.vcf.gz \
+        --reference W85_Phase0.fasta \
+        --ploidy 4 \
+        --inbreeding 0.01 \
+	--cores 12 > ${file}.hap.vcf
